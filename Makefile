@@ -15,7 +15,7 @@ BUILDDIR := build
 TARGETDIR := bin
 
 # Targets
-EXECUTABLE := MakeFileStudy
+EXECUTABLE := BasicRenderer
 TARGET := $(TARGETDIR)/$(EXECUTABLE)
 
 # Final paths
