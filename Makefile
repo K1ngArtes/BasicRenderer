@@ -34,7 +34,7 @@ INCLIST := $(patsubst include/%,-I include/%,$(INCDIRS))
 BUILDLIST := build/include
 
 #  Flags
-CFLAGS := -std=c++11 -stdlib=libc++ -O2
+CFLAGS := -std=c++11 -stdlib=libc++ -O2 -Wno-deprecated-declarations
 LIB := -L /usr/local/lib -lglfw -framework OpenGL
 INC := -I /usr/local/include
 
