@@ -34,7 +34,9 @@ INCLIST := $(patsubst include/%,-I include/%,$(INCDIRS))
 BUILDLIST := build/include
 
 #  Flags
-CFLAGS := -std=c++11 -stdlib=libc++ -O2 -Wno-deprecated-declarations
+# use c++11, don't show warnings (most associated with OpenGL deprecation)
+# and enable debugging
+CFLAGS := -std=c++11 -Wno-deprecated-declarations -g
 LIB := -L /usr/local/lib -lglfw -framework OpenGL
 INC := -I /usr/local/include
 
