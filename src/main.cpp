@@ -10,6 +10,9 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+// wireframe settings
+bool showWireframe = false;
+
 // vertex and fragment shaders
 // ---------------------------
 const char *vertexShaderSource = "#version 330 core\n"
@@ -165,6 +168,11 @@ void processInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        showWireframe ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        showWireframe = !showWireframe;
+    }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
