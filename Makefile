@@ -38,7 +38,7 @@ BUILDLIST := build/include
 # and enable debugging
 CFLAGS := -std=c++11 -Wno-deprecated-declarations -g
 LIB := -L /usr/local/lib -lglfw -framework OpenGL
-INC := -I /usr/local/include
+INC := -I /usr/local/include -I include
 
 $(TARGET): $(OBJECTS)
 	@echo "$(INCDIRS)"
@@ -49,7 +49,7 @@ $(TARGET): $(OBJECTS)
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 	@mkdir -p $(BUILDLIST)
-	@echo "$(CC) $(CFLAGS) $(INC) $(INCLIST) -c -o $@ $<"
+	@echo "LOL: $(CC) $(CFLAGS) $(INC) $(INCLIST) -c -o $@ $<"
 	@echo "Compiling $<..."; $(CC) $(CFLAGS) $(INC) $(INCLIST) -c -o $@ $<
 
 clean:
