@@ -44,7 +44,7 @@ int main()
     // build and compile shader program
     // --------------------------------
         char *smth = "Hello world";
-        Shader ourShader("../shaders/3.3.shader.vs", "../shaders/3.3.shader.fs");
+        Shader ourShader("shaders/3.3.shader.vs", "shaders/3.3.shader.fs");
 
     // set up vertices
     // --------------
