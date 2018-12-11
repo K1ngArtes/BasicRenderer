@@ -46,13 +46,6 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // Some vector study
-    glm::mat4 trans = glm::mat4(1.0f);
-    // second rotate (rotation axis should be UNIT vector)
-    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // first scale
-    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
     // build and compile shader program
     // --------------------------------
     Shader ourShader("shaders/3.3.shader.vs", "shaders/3.3.shader.fs");
@@ -169,6 +162,13 @@ int main()
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
         unsigned int transformLocation = glGetUniformLocation(ourShader.ID, "transform");
+
+        // Some vector study
+        glm::mat4 trans = glm::mat4(1.0f);
+        // second translate
+        trans = glm::translate(trans, glm::vec3(0.5, -0.5, 0.5));
+        // first rotate (rotation axis should be UNIT vector)
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         // value_ptr stores matrix in the way OpenGL likes it
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
 
