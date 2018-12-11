@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <cmath>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shader_s.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -42,6 +45,13 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // Some vector study
+    glm::mat4 trans = glm::mat4(1.0f);
+    // second rotate (rotation axis should be UNIT vector)
+    trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // first scale
+    trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
     // build and compile shader program
     // --------------------------------
@@ -158,6 +168,9 @@ int main()
         ourShader.use();
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
+        unsigned int transformLocation = glGetUniformLocation(ourShader.ID, "transform");
+        // value_ptr stores matrix in the way OpenGL likes it
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
 
         glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
         glBindTexture(GL_TEXTURE_2D, texture1);
