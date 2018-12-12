@@ -50,18 +50,13 @@ int main()
     // --------------------------------
     Shader ourShader("shaders/3.3.shader.vs", "shaders/3.3.shader.fs");
 
-    // set up vertices
+    // set up mainVertices
     // --------------
-    float vertices[] = {
-        // positions         // colors           // texture coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-    };
-    unsigned int indices[] = {
-        0, 1, 3,
-        1, 2, 3
+    float mainVertices[] = {
+        // positions        // color
+        0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // top
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
     };
     float texCoords[] = {
         1.0f, 0.0f, // lower-right corner
@@ -112,28 +107,21 @@ int main()
 
     // Set up Vertex Buffer Object and Vertex Array Object
     // ---------------------------------------------------
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
     // 1) bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
     glBindVertexArray(VAO);
     // from now on every call to GL_ARRAY_BUFFER affects currently bound buffer
-    // 2) copy vertices array into a buffer
+    // 2) copy mainVertices array into a buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // copy vertex indeces data into EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(mainVertices), mainVertices, GL_STATIC_DRAW);
     // 3) set position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
     // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    // texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
     // unbind buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
@@ -159,27 +147,10 @@ int main()
         // int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         // Draw triangle
         ourShader.use();
-        ourShader.setInt("texture1", 0);
-        ourShader.setInt("texture2", 1);
-        unsigned int transformLocation = glGetUniformLocation(ourShader.ID, "transform");
 
-        // Some vector study
-        glm::mat4 trans = glm::mat4(1.0f);
-        // second translate
-        trans = glm::translate(trans, glm::vec3(0.5, -0.5, 0.5));
-        // first rotate (rotation axis should be UNIT vector)
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        // value_ptr stores matrix in the way OpenGL likes it
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
-
-        glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1); // activate the texture unit first before binding texture
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glEnable(GL_PROGRAM_POINT_SIZE);
+        glDrawArrays(GL_POINTS, 0, 3);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
