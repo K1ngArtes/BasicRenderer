@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -13,6 +14,7 @@
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void processInput(GLFWwindow *window);
+void break_lines(float A[3], float B[3], float C[3], std::vector<float> &vertices, int &size, int depth);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -52,12 +54,19 @@ int main()
 
     // set up mainVertices
     // --------------
-    float mainVertices[] = {
-        // positions        // color
-        0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // top
-        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
-    };
+    std::vector<float> mainVertices;
+    int verticesSize;
+    float A[3] = { 0.0f,  0.5f, 0.0f };
+    float B[3] = { 0.5f, -0.5f, 0.0f };
+    float C[3] = { -0.5f, -0.5f, 0.0f };
+    break_lines(A, B, C, mainVertices, verticesSize, 2);
+    std::cout << "vertices size is " << mainVertices.size() << std::endl;
+
+    //     // positions        // color
+    //     0.0f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // top
+    //     0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f, // bottom right
+    //     -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+    // };
     float texCoords[] = {
         1.0f, 0.0f, // lower-right corner
         0.0f, 0.0f, // lower-left corner
@@ -115,7 +124,7 @@ int main()
     // from now on every call to GL_ARRAY_BUFFER affects currently bound buffer
     // 2) copy mainVertices array into a buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(mainVertices), mainVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, mainVertices.size() * sizeof(float), &mainVertices[0], GL_STATIC_DRAW);
     // 3) set position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
     glEnableVertexAttribArray(0);
@@ -150,7 +159,7 @@ int main()
 
         glBindVertexArray(VAO);
         glEnable(GL_PROGRAM_POINT_SIZE);
-        glDrawArrays(GL_POINTS, 0, 3);
+        glDrawArrays(GL_POINTS, 0, 100);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -184,4 +193,38 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+// A, B and C are coordinates of the triangle vertices
+void break_lines(float A[3], float B[3], float C[3], std::vector<float> &vertices, int &size, int depth) {
+    if(depth > 0) {
+        float D[3] = { (A[0]+B[0])/2, (A[1]+B[1])/2, 0.0f }; // AB
+        float E[3] = { (A[0]+C[0])/2, (A[1]+C[1])/2, 0.0f }; // AC
+        float F[3] = { (B[0]+C[0])/2, (B[1]+C[1])/2, 0.0f }; // BC
+
+        // so new triangles are DFB, DEF, ECF, AED
+        float newVertices[] = {
+            D[0], D[1], D[2], 1.0f, 0.0f, 0.0f, // top
+            F[0], F[1], F[2], 1.0f, 0.0f, 0.0f, // bottom right
+            B[0], B[1], B[2], 1.0f, 0.0f, 0.0f, // bottom left
+
+            D[0], D[1], D[2], 1.0f, 0.0f, 0.0f, // top left
+            E[0], E[1], E[2], 1.0f, 0.0f, 0.0f, // top right
+            F[0], F[1], F[2], 1.0f, 0.0f, 0.0f, // bottom
+
+            E[0], E[1], E[2], 1.0f, 0.0f, 0.0f, // top
+            C[0], C[1], C[2], 1.0f, 0.0f, 0.0f, // bottom right
+            F[0], F[1], F[2], 1.0f, 0.0f, 0.0f, // bottom left
+
+            A[0], A[1], A[2], 1.0f, 0.0f, 0.0f, // top
+            E[0], E[1], E[2], 1.0f, 0.0f, 0.0f, // bottom right
+            D[0], D[1], D[2], 1.0f, 0.0f, 0.0f, // bottom left
+        };
+
+        size += 72;
+        vertices.insert(vertices.end(), &newVertices[0], &newVertices[size]);
+        std::cout << "HI" << std::endl;
+        break_lines(A, D, E, vertices, size, --depth);
+    }
+
 }
