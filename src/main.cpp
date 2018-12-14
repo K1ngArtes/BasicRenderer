@@ -250,7 +250,9 @@ int main()
         for(unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             // model transformation
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
+            model = glm::translate(model, cubePositions[i]);
+            float angel = 20.0f * i;
+            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angel), glm::vec3(1.0f, 0.3f, 0.5f));  
             
             glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, 36);
