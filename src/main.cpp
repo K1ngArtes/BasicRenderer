@@ -54,15 +54,14 @@ int main()
     // --------------
     float vertices[] = {
         // positions         // colors           // texture coords
-        0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-        0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+        0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,   // top right
+        0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f   // top left
     };
     unsigned int indices[] = {
         0, 1, 3,
-        1, 2, 3
-    };
+        1, 2, 3};
     float texCoords[] = {
         1.0f, 0.0f, // lower-right corner
         0.0f, 0.0f, // lower-left corner
@@ -75,7 +74,7 @@ int main()
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -84,10 +83,13 @@ int main()
     int width, height, nrChannels;
     stbi_set_flip_vertically_on_load(true); // because openGL regards 0.0 for y as the bottom whereas images at the top
     unsigned char *data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
+    if (data)
+    {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
+    }
+    else
+    {
         std::cerr << "Failed to load texture 1!" << std::endl;
     }
     // texture 2
@@ -96,16 +98,19 @@ int main()
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D, texture2); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); // set texture wrapping to GL_REPEAT (default wrapping method)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     data = stbi_load("textures/shrek.jpg", &width, &height, &nrChannels, 0);
-    if (data) {
+    if (data)
+    {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
-    } else {
+    }
+    else
+    {
         std::cerr << "Failed to load texture 2!" << std::endl;
     }
     stbi_image_free(data);
@@ -132,13 +137,24 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
     // texture attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
     // unbind buffer
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    // Some vector study
+    glm::mat4 model = glm::mat4(1.0f);
+    // model transformation
+    model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    // view matrix
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    // projection
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH) / SCR_HEIGHT, 0.1f, 100.0f);
 
     // render loop
     // -----------
@@ -161,16 +177,14 @@ int main()
         ourShader.use();
         ourShader.setInt("texture1", 0);
         ourShader.setInt("texture2", 1);
-        unsigned int transformLocation = glGetUniformLocation(ourShader.ID, "transform");
+        unsigned int modelLocation = glGetUniformLocation(ourShader.ID, "model");
+        unsigned int viewLocation = glGetUniformLocation(ourShader.ID, "view");
+        unsigned int projectionLocation = glGetUniformLocation(ourShader.ID, "projection");
 
-        // Some vector study
-        glm::mat4 trans = glm::mat4(1.0f);
-        // second translate
-        trans = glm::translate(trans, glm::vec3(0.5, -0.5, 0.5));
-        // first rotate (rotation axis should be UNIT vector)
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
         // value_ptr stores matrix in the way OpenGL likes it
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, glm::value_ptr(trans));
+        glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
+        glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
 
         glActiveTexture(GL_TEXTURE0); // activate the texture unit first before binding texture
         glBindTexture(GL_TEXTURE_2D, texture1);
