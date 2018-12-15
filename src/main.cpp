@@ -206,8 +206,8 @@ int main()
 
     // Some vector study
     // view matrix
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    // glm::mat4 view = glm::mat4(1.0f);
+    // view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
     // projection
     glm::mat4 projection = glm::mat4(1.0f);
     projection = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH) / SCR_HEIGHT, 0.1f, 100.0f);
@@ -237,6 +237,14 @@ int main()
         unsigned int viewLocation = glGetUniformLocation(ourShader.ID, "view");
         unsigned int projectionLocation = glGetUniformLocation(ourShader.ID, "projection");
 
+        float radius = 10.0f;
+        float camX = sin(glfwGetTime()) * radius;
+        float camZ = cos(glfwGetTime()) * radius;
+        glm::mat4 view = glm::mat4(1.0f);
+        view = glm::lookAt(glm::vec3(camX, 0.0f, camZ),
+                           glm::vec3(0.0f, 0.0f, 0.0f),
+                           glm::vec3(0.0f, 1.0f, 0.0f));
+
         // value_ptr stores matrix in the way OpenGL likes it
         glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(projection));
@@ -251,8 +259,8 @@ int main()
             glm::mat4 model = glm::mat4(1.0f);
             // model transformation
             model = glm::translate(model, cubePositions[i]);
-            float angel = 20.0f * i;
-            model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angel), glm::vec3(1.0f, 0.3f, 0.5f));  
+            // float angel = 20.0f * i;
+            // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(angel), glm::vec3(1.0f, 0.3f, 0.5f));  
             
             glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(model));
             glDrawArrays(GL_TRIANGLES, 0, 36);
